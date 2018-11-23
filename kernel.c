@@ -2,21 +2,9 @@
 #include "mem.h"
 #include "uart.h"
 #include "framebuffer.h"
-extern uint8_t font[];
 
 static uint32_t x = 0;
 static uint32_t y = 0;
-
-void draw_char(uint8_t chr)
-{
-    for (uint32_t py = 0; py < 16; py++){
-        uint8_t row = *(font+chr*16+py);
-        for (uint32_t px = 0; px < 8; px++)
-        {
-            setPixel(x + px, y + py, row & (1 << px) ? 0xFFFFFFFF : 0x0);
-        }
-    }
-}
 
 void halt()
 {
@@ -30,12 +18,12 @@ void tty_write(uint8_t chr)
         uart_write(' ');
         uart_write('\b');
         x-=8;
-        draw_char(' ');
+        draw_char(' ', x, y);
     } else if(chr == '\n'){
         x=0;
         y+=16;
     } else {
-        draw_char(chr);
+        draw_char(chr, x, y);
         x+=8;
     }
 }
