@@ -15,7 +15,15 @@ _start:
     mov sp,#0x8000
     bl kmain
 
+.global delay
+delay:
+.loop:
+subs r0, r0, #1
+bne .loop
+bx lr
+
 .section .data
 .global font
 font:
     .incbin "font.bin"
+

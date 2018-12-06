@@ -10,7 +10,7 @@ SECTIONS {
     .data : {
         *(.data)
         *(.bss)
-        *(.rodata.*)
+        *(.rodata*)
         *(.COMMON)
     }
 
