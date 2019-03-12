@@ -1,14 +1,15 @@
 ARMGNU ?= arm-none-eabi
-LINKER ?= build/kernel.ld
+ARMGNUVERSION ?= 6.3.1
+LINKER ?= linker/kernel.ld
 
-AOBJS := $(patsubst %.s,build/%.o,$(wildcard *.s))
-COBJS := $(patsubst %.c,build/%.o,$(wildcard *.c))
+AOBJS := $(patsubst src/%.s,build/%.o,$(wildcard src/*.s))
+COBJS := $(patsubst src/%.c,build/%.o,$(wildcard src/*.c))
 OBJECTS := $(AOBJS) $(COBJS)
 DEPS := $(COBJS:.o=.d)
 
 CFLAGS += -std=c99 -mfloat-abi=hard -ffreestanding -fno-builtin -march=armv7-a -MD -MP -g
 
-LDFLAGS += --no-undefined -L/usr/lib/gcc/arm-none-eabi/6.3.1/ -lgcc
+LDFLAGS += --no-undefined -L/usr/lib/gcc/arm-none-eabi/$(ARMGNUVERSION)/ -lgcc
 
 TARGET = build/kernel.img
 
@@ -22,10 +23,10 @@ $(TARGET) : build/output.elf
 build/output.elf : $(LINKER) $(OBJECTS)
 	$(ARMGNU)-ld $(OBJECTS) $(LDFLAGS) -o $@ -T $(LINKER)
 
-build/%.o : %.s | build
+build/%.o : src/%.s | build
 	$(ARMGNU)-as -I . $< -o $@
 
-build/%.o : %.c | build
+build/%.o : src/%.c | build
 	$(ARMGNU)-gcc $(CFLAGS) -c $< -o $@
 
 build :
