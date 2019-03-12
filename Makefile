@@ -8,7 +8,7 @@ DEPS := $(COBJS:.o=.d)
 
 CFLAGS += -std=c99 -mfloat-abi=hard -ffreestanding -fno-builtin -march=armv7-a -MD -MP -g
 
-LDFLAGS += --no-undefined
+LDFLAGS += --no-undefined -L/usr/lib/gcc/arm-none-eabi/6.3.1/ -lgcc
 
 TARGET = build/kernel.img
 
@@ -20,7 +20,7 @@ $(TARGET) : build/output.elf
 	$(ARMGNU)-objcopy $< -O binary $@
 
 build/output.elf : $(LINKER) $(OBJECTS)
-	$(ARMGNU)-ld $(LDFLAGS) $(OBJECTS) -o $@ -T $(LINKER)
+	$(ARMGNU)-ld $(OBJECTS) $(LDFLAGS) -o $@ -T $(LINKER)
 
 build/%.o : %.s | build
 	$(ARMGNU)-as -I . $< -o $@
