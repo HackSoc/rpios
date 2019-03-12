@@ -1,5 +1,7 @@
 #include "gpio.h"
 
+#include "main.h"
+
 void gpio_set_alt_function(int gpio, int alt)
 {
 	int off;
