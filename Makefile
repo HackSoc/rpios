@@ -29,7 +29,7 @@ build/%.o : %.c | build
 	$(ARMGNU)-gcc $(CFLAGS) -c $< -o $@
 
 build :
-	@mkdir $@
+	@mkdir -p $@
 
 clean :
 	rm -f $(DEPS) $(OBJECTS) build/output.elf $(TARGET)
