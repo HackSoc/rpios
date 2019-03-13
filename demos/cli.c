@@ -80,6 +80,7 @@ void cli() {
         } else if (strncmp(line, (uint8_t*)"help", MAX(sep - line, 4)) == 0) {
             draw_string("Available commands: echo, help, random, qr, image\n");
         } else if (strncmp(line, (uint8_t*)"random", MAX(sep - line, 6)) == 0) {
+            reserve_space(128);
             for (int dx = 0; dx < 128; dx++)
                 for (int dy = 0; dy < 128; dy++)
                     setPixel(cursor.x + dx, cursor.y + dy, rng_read());
@@ -90,6 +91,7 @@ void cli() {
             uint8_t qrbytes[qrcode_getBufferSize(3)]; // with version 3, we can store approximately 50 8-bit characters (more in the reduced character sets)
             qrcode_initText(&qrcode, qrbytes, 3, ECC_LOW, (const char *)sep + 1);
             int scale = 6;
+            reserve_space((qrcode.size + 8) * scale);
             for (int qrx = -4; qrx < (qrcode.size + 4); qrx++) {
                 for (int qry = -4; qry < (qrcode.size + 4); qry++)
                     if ((qrx < 0) || (qrx >= qrcode.size) || (qry < 0) || (qry >= qrcode.size) || (!qrcode_getModule(&qrcode, qrx, qry))) {
@@ -109,6 +111,7 @@ void cli() {
             }
             cursor.y += (qrcode.size + 8) * scale;
         } else if (strncmp(line, (uint8_t*)"image", MAX(sep - line, 5)) == 0) {
+            reserve_space(128);
             cursor.y += blit_image(cursor.x, cursor.y, hacksoc_xpm) & 0xffff;
         } else {
             line[sep - line] = '\0';

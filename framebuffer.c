@@ -69,23 +69,27 @@ void draw_string(char *s) {
             cursor.x = 0;
             cursor.y += 16;
         }
-        if (cursor.y >= 1080) {
-            // TODO: DMA
-            // Scroll screen
-            for (uint32_t y = 16; y < 1080; y++) {
-                for (uint32_t x = 0; x < 1920; x++) {
-                    setPixel(x, y - 16, getPixel(x, y));
-                }
+        reserve_space(0);
+    }
+}
+
+void reserve_space(uint32_t y) {
+    while (cursor.y >= (1080 - y - 16)) {
+        // TODO: DMA
+        // Scroll screen
+        for (uint32_t y = 16; y < 1080; y++) {
+            for (uint32_t x = 0; x < 1920; x++) {
+                setPixel(x, y - 16, getPixel(x, y));
             }
-            // Clear bottom row
-            for (uint32_t y = 1080 - 16; y < 1080; y++) {
-                for (uint32_t x = 0; x < 1920; x++) {
-                    setPixel(x, y, 0);
-                }
-            }
-            // Put the cursor back on the screen
-            cursor.y -= 16;
         }
+        // Clear bottom row
+        for (uint32_t y = 1080 - 16; y < 1080; y++) {
+            for (uint32_t x = 0; x < 1920; x++) {
+                setPixel(x, y, 0);
+            }
+        }
+        // Put the cursor back on the screen
+        cursor.y -= 16;
     }
 }
 

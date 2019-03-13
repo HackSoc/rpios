@@ -25,3 +25,4 @@ void setPixel(uint32_t, uint32_t, uint32_t);
 void draw_char(uint8_t, uint32_t, uint32_t);
 void draw_string(char *s);
 uint64_t blit_image(uint32_t x, uint32_t y, char *xpm[]);
+void reserve_space(uint32_t y);
