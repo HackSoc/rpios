@@ -6,8 +6,8 @@ COBJS := $(patsubst %.c,build/%.o,$(wildcard *.c) $(wildcard demos/*.c))
 OBJECTS := $(AOBJS) $(COBJS)
 DEPS := $(COBJS:.o=.d)
 
-CFLAGS += -std=gnu99 -mfloat-abi=hard -ffreestanding -fno-builtin -march=armv7-a -mfpu=vfpv3 -I. -MD -MP -g
-LDFLAGS += --no-undefined -L/usr/lib/gcc/arm-none-eabi/8.3.0/ -lgcc -g
+CFLAGS += -std=c99 -mfloat-abi=hard -ffreestanding -fno-builtin -march=armv7-a -MD -MP -g
+LDFLAGS = --no-undefined  -L/usr/lib/gcc/arm-none-eabi/8.3.0/ -L/opt/york/cs/hdd/sourcery-codebench-lite-arm/lib/gcc/arm-none-linux-gnueabi/4.8.3/ -lgcc
 
 TARGET = build/kernel.img
 
@@ -34,7 +34,12 @@ build :
 clean :
 	rm -f $(DEPS) $(OBJECTS) build/output.elf $(TARGET)
 
+<<<<<<< HEAD
 run : $(TARGET)
 	qemu-system-arm -machine raspi2 -bios $(TARGET) -serial mon:stdio -s -S
+=======
+run : $(TARGET) qemu/qemu-system-arm qemu/libpng12.so.0 qemu/libcurl.so.4
+	@LD_LIBRARY_PATH=qemu qemu/qemu-system-arm -machine raspi2 -bios $(TARGET) -serial mon:stdio -s
+>>>>>>> aeaa4301c27a7b662d7c79b52f70f5749b2caf22
 
 -include $(DEPS)
