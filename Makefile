@@ -30,7 +30,7 @@ build/%.o : %.c | build
 
 build :
 	@mkdir -p $@
-	@mkdir -p "$@/demos"
+	@mkdir -p $@/demos
 
 clean :
 	rm -f $(DEPS) $(OBJECTS) build/output.elf $(TARGET)
