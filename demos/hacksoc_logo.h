@@ -7,7 +7,6 @@
 #define DISPLAY_HEIGHT 1080
 
 /* XPM */
-/* XPM */
 static char * hacksoc_logo_xpm[] = {
 "200 200 4 1",
 " 	c None",

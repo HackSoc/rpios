@@ -25,7 +25,6 @@ void hacksoc_logo_animation() {
                 setPixel(x, y, 0);
             }
         }
-        delay(10000);
 
         pos_x += speed_x;
         pos_y += speed_y;
