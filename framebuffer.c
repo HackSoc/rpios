@@ -4,6 +4,12 @@
 #include "mailbox.h"
 
 static volatile uint32_t *fb;
+
+uint32_t *get_fb_ptr()
+{
+    return fb;
+}
+
 extern uint8_t font[];
 //Workaround for a horrible gcc bug
 static struct fbcfg fbcfg = {0};
@@ -18,6 +24,8 @@ volatile uint32_t *fb_init(uint32_t width, uint32_t height)
     mbox_write(((uint32_t) &fbcfg)+0xC0000000, 1);
     if(!mbox_read(1)){
         fb = (volatile uint32_t *) (fbcfg.addr-0xC0000000);
+        // hacks lol
+
         return fb;
     }
     return NULL;
@@ -39,7 +47,7 @@ void draw_char(uint8_t chr, uint32_t x, uint32_t y)
     }
 }
 
-uint64_t blit_image(uint32_t x, uint32_t y, char *xpm[]) {
+image_info render_xpm(uint32_t *img, char *xpm[]) {
     int i = 0;
     int width = 0;
     for (; xpm[0][i] != ' '; i++) {
@@ -93,10 +101,25 @@ uint64_t blit_image(uint32_t x, uint32_t y, char *xpm[]) {
                 }
             }
             if (!colortable[k].transparent) {
-                setPixel(j + x, i + y, colortable[k].co);
+                img[j + i*width] = colortable[k].co;
             }
         }
     }
 
-    return ((uint64_t)height << 32) | width;
+    image_info info;
+    info.width = width;
+    info.height = height;
+    return info;
+}
+
+void blit(uint32_t *image, uint32_t x_off, uint32_t y_off, uint32_t src_w, uint32_t src_h)
+{
+    for(int y = 0; y < src_h; y++)
+    {
+        for(int x = 0; x < src_w; x++)
+        {
+            //setPixel(x+x_off, y+y_off, 0xFFFFFFFF);
+            setPixel(x+x_off, y+y_off, image[x+y*src_w]);
+        }
+    }
 }

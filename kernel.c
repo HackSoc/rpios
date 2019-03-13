@@ -67,15 +67,27 @@ uint8_t *gets(uint8_t *str, size_t len)
     }
 }
 
+#define ARM_AUX_CONTROL_SMP (1 << 6)
+#define ARM_CONTROL_BRANCH_PREDICTION      (1 << 11)
+#define ARM_CONTROL_L1_INSTRUCTION_CACHE   (1 << 12)
+
 void kmain()
 {
     uart_init();
     if(!fb_init(1920, 1080))
         halt();
-    uint8_t line[241] = {0};
-    while(1){
-        puts(gets(line, 241));
-        memset(line, 0, 241);
-    }
+
+    uint32_t nAuxControl;
+    asm volatile ("mrc p15, 0, %0, c1, c0,  1" : "=r" (nAuxControl));
+    nAuxControl |= ARM_AUX_CONTROL_SMP;
+    asm volatile ("mcr p15, 0, %0, c1, c0,  1" : : "r" (nAuxControl));   // SMP bit must be set according to ARM TRM
+
+    uint32_t nControl;
+    asm volatile ("mrc p15, 0, %0, c1, c0,  0" : "=r" (nControl));
+    nControl |= ARM_CONTROL_BRANCH_PREDICTION | ARM_CONTROL_L1_INSTRUCTION_CACHE;
+    asm volatile ("mcr p15, 0, %0, c1, c0,  0" : : "r" (nControl) : "memory");
+
+    go();
+    hacksoc_logo_animation();
     halt();
 }

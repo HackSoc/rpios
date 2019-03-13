@@ -26,4 +26,3 @@ bx lr
 .global font
 font:
     .incbin "font.bin"
-

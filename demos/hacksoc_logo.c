@@ -7,7 +7,17 @@
 #include "../rng.h"
 #include <stdbool.h>
 
+uint32_t logo_storage[HACKSOC_LOGO_HEIGHT * HACKSOC_LOGO_WIDTH * 4];
+
 void hacksoc_logo_animation() {
+    rng_init();
+
+    for (uint32_t x = 0; x < HACKSOC_LOGO_WIDTH; x++) {
+        for (uint32_t y = 0; y <  HACKSOC_LOGO_HEIGHT; y++) {
+            logo_storage[x+y*HACKSOC_LOGO_WIDTH] = 0;
+        }
+    }
+
     int32_t pos_x = DISPLAY_WIDTH / 2, pos_y = DISPLAY_HEIGHT / 2,
         speed_x = 0, speed_y = 0;
 
@@ -15,10 +25,12 @@ void hacksoc_logo_animation() {
     uint32_t speed_range = 8;
     while (speed_x == 0) speed_x = rng_read() % speed_range - speed_range / 2;
     while (speed_y == 0) speed_y = rng_read() % speed_range - speed_range / 2;
-        
+    
+    image_info info = render_xpm(logo_storage, hacksoc_logo_xpm);
+
     while (1) {
         // Blit the image, then paint black over it
-        blit_image(pos_x, pos_y, hacksoc_logo_xpm);
+        blit(logo_storage, pos_x, pos_y, HACKSOC_LOGO_WIDTH, HACKSOC_LOGO_HEIGHT);
         delay(1000000);
         for (uint32_t x = pos_x; x < pos_x + HACKSOC_LOGO_WIDTH; x++) {
             for (uint32_t y = pos_y; y < pos_y + HACKSOC_LOGO_HEIGHT; y++) {

@@ -11,7 +11,7 @@ SECTIONS {
         *(.data)
         *(.bss)
         *(.rodata*)
-        *(.COMMON)
+        *(*COMMON)
     }
 
     /DISCARD/ : {

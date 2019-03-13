@@ -85,7 +85,7 @@ void cli() {
             }
             y += (qrcode.size + 8) * scale;
         } else if (strncmp(line, (uint8_t*)"image", MAX(sep - line, 5)) == 0) {
-            y += blit_image(x, y, hacksoc_xpm) & 0xffff;
+            //y += blit_image(x, y, hacksoc_xpm) & 0xffff;
         } else {
             putn(line, sep - line);
             puts((uint8_t*)": command not found");
