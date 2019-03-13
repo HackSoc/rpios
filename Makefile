@@ -34,12 +34,7 @@ build :
 clean :
 	rm -f $(DEPS) $(OBJECTS) build/output.elf $(TARGET)
 
-<<<<<<< HEAD
-run : $(TARGET)
-	qemu-system-arm -machine raspi2 -bios $(TARGET) -serial mon:stdio -s -S
-=======
 run : $(TARGET) qemu/qemu-system-arm qemu/libpng12.so.0 qemu/libcurl.so.4
 	@LD_LIBRARY_PATH=qemu qemu/qemu-system-arm -machine raspi2 -bios $(TARGET) -serial mon:stdio -s
->>>>>>> aeaa4301c27a7b662d7c79b52f70f5749b2caf22
 
 -include $(DEPS)
