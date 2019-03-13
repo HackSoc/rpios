@@ -61,6 +61,7 @@ uint64_t blit_image(uint32_t x, uint32_t y, char *xpm[]) {
     for (; xpm[0][i] != '\0'; i++) {
         chars = chars * 10 + xpm[0][i] - '0';
     }
+    // TODO: support chars > 1
 
     struct Color {
         char ch;

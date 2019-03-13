@@ -1,4 +1,5 @@
 #pragma once
+#include <stdbool.h>
 #include <stdint.h>
 
 #define UART_BASE ((volatile uint32_t *) 0x3F201000)
@@ -19,9 +20,9 @@
 
 // Interrupt Mask Set Clear Register
 #define UART_IMSC (UART_BASE + 14)
-// Raw Interupt Status Register 
+// Raw Interupt Status Register
 #define UART_RIS (UART_BASE + 15)
-// Masked Interupt Status Register 
+// Masked Interupt Status Register
 #define UART_MIS (UART_BASE + 16)
 // Interupt Clear Register
 #define UART_ICR (UART_BASE + 17)
@@ -29,3 +30,4 @@
 void uart_init();
 uint8_t uart_read();
 void uart_write(uint8_t);
+bool uart_read_ready();
