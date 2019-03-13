@@ -13,7 +13,15 @@ struct fbcfg {
     uint32_t size;
 } __attribute__ ((aligned (16)));
 
+struct Coord {
+    uint32_t x;
+    uint32_t y;
+};
+
+struct Coord cursor;
+
 volatile uint32_t *fb_init(uint32_t width, uint32_t height);
 void setPixel(uint32_t, uint32_t, uint32_t);
 void draw_char(uint8_t, uint32_t, uint32_t);
+void draw_string(char *s);
 uint64_t blit_image(uint32_t x, uint32_t y, char *xpm[]);

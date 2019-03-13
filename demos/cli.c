@@ -10,20 +10,6 @@
 #define MIN(a, b) ({ __typeof__(a) _min_a = (a); __typeof__(b) _min_b = (b); _min_a > _min_b ? _min_b : _min_a; })
 #define MAX(a, b) ({ __typeof__(a) _max_a = (a); __typeof__(b) _max_b = (b); _max_a > _max_b ? _max_a : _max_b; })
 
-static uint32_t x = 0; static uint32_t y = 0;
-
-void putn(uint8_t *str, size_t n) {
-    for (uint8_t chr, i = 0; (chr = *str) && i < n; str++, i++) {
-        tty_write(chr);
-    }
-}
-void put(uint8_t *str) {
-    uint8_t chr;
-    while (chr = *str++) {
-        tty_write(chr);
-    }
-}
-
 uint8_t *strchrnul(const uint8_t *s, uint8_t c) {
     size_t i;
     for (i = 0; s[i] != c && s[i] != '\0'; i++);
@@ -42,24 +28,62 @@ uint8_t strncmp(const uint8_t *s1, const uint8_t *s2, size_t n) {
     return 0;
 }
 
+uint8_t *gets(uint8_t *str, size_t len)
+{
+    uint8_t *current_chr = str;
+    while(1){
+        uint8_t input_chr = uart_read();
+        switch(input_chr){
+            case '\r':
+            case '\n':
+                draw_string("\n");
+                uart_write('\n');
+                return str;
+            case '\b':
+            case 0x7F:
+                if(current_chr > str) {
+                    draw_string("\b");
+                    uart_write('\b');
+                    uart_write(' ');
+                    uart_write('\b');
+                    current_chr--;
+                    *current_chr = '\0';
+                }
+                break;
+            default:
+                if(current_chr >= str+len-1)
+                    continue;
+                char buf[2] = {0};
+                buf[0] = input_chr;
+                draw_string(buf);
+                uart_write(input_chr);
+                *current_chr = input_chr;
+                current_chr++;
+                break;
+        }
+    }
+}
+
 void cli() {
     uint8_t line[241] = {0};
     rng_init();
     while (1) {
-        tty_write('>');
-        tty_write(' ');
+        draw_string("> ");
+        uart_write('>');
+        uart_write(' ');
         gets(line, 241);
         uint8_t *sep = strchrnul(line, ' ');
         if (line[0] == '\0') {
         } else if (strncmp(line, (uint8_t*)"echo", MAX(sep - line, 4)) == 0) {
-            puts(sep + 1); // buffer overreads? shusb nou
+            draw_string(sep + 1); // buffer overreads? shusb nou
+            draw_string("\n");
         } else if (strncmp(line, (uint8_t*)"help", MAX(sep - line, 4)) == 0) {
-            puts((uint8_t*)"Available commands: echo, help, random, qr, image");
+            draw_string("Available commands: echo, help, random, qr, image\n");
         } else if (strncmp(line, (uint8_t*)"random", MAX(sep - line, 6)) == 0) {
             for (int dx = 0; dx < 128; dx++)
                 for (int dy = 0; dy < 128; dy++)
-                    setPixel(x + dx, y + dy, rng_read());
-            y += 128;
+                    setPixel(cursor.x + dx, cursor.y + dy, rng_read());
+            cursor.y += 128;
         } else if (strncmp(line, (uint8_t*)"qr", MAX(sep - line, 2)) == 0) {
             // XXX: encoding a too-long string causes Bad Things™ to happen
             QRCode qrcode;
@@ -73,22 +97,23 @@ void cli() {
                         uart_write('#');
                         for (int dx = 0; dx < scale; dx++)
                             for (int dy = 0; dy < scale; dy++)
-                                setPixel(x + (qrx + 4) * scale + dx, y + (qry + 4) * scale + dy, 0xffffffff);
+                                setPixel(cursor.x + (qrx + 4) * scale + dx, cursor.y + (qry + 4) * scale + dy, 0xffffffff);
                     } else {
                         uart_write(' ');
                         uart_write(' ');
                         for (int dx = 0; dx < scale; dx++)
                             for (int dy = 0; dy < scale; dy++)
-                                setPixel(x + (qrx + 4) * scale + dx, y + (qry + 4) * scale + dy, 0);
+                                setPixel(cursor.x + (qrx + 4) * scale + dx, cursor.y + (qry + 4) * scale + dy, 0);
                     }
                 uart_write('\n');
             }
-            y += (qrcode.size + 8) * scale;
+            cursor.y += (qrcode.size + 8) * scale;
         } else if (strncmp(line, (uint8_t*)"image", MAX(sep - line, 5)) == 0) {
-            y += blit_image(x, y, hacksoc_xpm) & 0xffff;
+            cursor.y += blit_image(cursor.x, cursor.y, hacksoc_xpm) & 0xffff;
         } else {
-            putn(line, sep - line);
-            puts((uint8_t*)": command not found");
+            line[sep - line] = '\0';
+            draw_string(line);
+            draw_string(": command not found\n");
         }
         memset(line, 0, 241);
     }

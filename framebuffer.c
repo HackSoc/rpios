@@ -8,6 +8,8 @@ extern uint8_t font[];
 //Workaround for a horrible gcc bug
 static struct fbcfg fbcfg = {0};
 
+struct Coord cursor = {0};
+
 volatile uint32_t *fb_init(uint32_t width, uint32_t height)
 {
     fbcfg.width = width;
@@ -28,6 +30,10 @@ void setPixel(uint32_t x, uint32_t y, uint32_t colour)
     *(fb+x+fbcfg.width*y) = colour;
 }
 
+uint32_t getPixel(uint32_t x, uint32_t y) {
+    return *(fb+x+fbcfg.width*y);
+}
+
 void draw_char(uint8_t chr, uint32_t x, uint32_t y)
 {
     for (uint32_t py = 0; py < 16; py++){
@@ -35,6 +41,50 @@ void draw_char(uint8_t chr, uint32_t x, uint32_t y)
         for (uint32_t px = 0; px < 8; px++)
         {
             setPixel(x + px, y + py, row & (1 << px) ? 0xFFFFFFFF : 0x0);
+        }
+    }
+}
+
+void draw_string(char *s) {
+    for (uint32_t i = 0; s[i] != '\0'; i++) {
+        switch (s[i]) {
+            case '\n':
+                cursor.x = 0;
+                cursor.y += 16;
+                break;
+            case '\t':
+                cursor.x += 8 * 8;
+                break;
+            case '\b':
+                cursor.x -= 8;
+                draw_char(' ', cursor.x, cursor.y);
+                break;
+            default:
+                draw_char(s[i], cursor.x, cursor.y);
+                cursor.x += 8;
+                break;
+        }
+        if (cursor.x >= 1920) {
+            // Wrap to next line
+            cursor.x = 0;
+            cursor.y += 16;
+        }
+        if (cursor.y >= 1080) {
+            // TODO: DMA
+            // Scroll screen
+            for (uint32_t y = 16; y < 1080; y++) {
+                for (uint32_t x = 0; x < 1920; x++) {
+                    setPixel(x, y - 16, getPixel(x, y));
+                }
+            }
+            // Clear bottom row
+            for (uint32_t y = 1080 - 16; y < 1080; y++) {
+                for (uint32_t x = 0; x < 1920; x++) {
+                    setPixel(x, y, 0);
+                }
+            }
+            // Put the cursor back on the screen
+            cursor.y -= 16;
         }
     }
 }
