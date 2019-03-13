@@ -8,7 +8,7 @@ DEPS := $(COBJS:.o=.d)
 
 CFLAGS += -std=c99 -mfloat-abi=hard -ffreestanding -fno-builtin -march=armv7-a -MD -MP -g
 
-LDFLAGS += --no-undefined -L/usr/lib/gcc/arm-none-eabi/6.3.1/ -lgcc
+LDFLAGS = --no-undefined -L/opt/york/cs/hdd/sourcery-codebench-lite-arm/lib/gcc/arm-none-linux-gnueabi/4.8.3/ -lgcc
 
 TARGET = build/kernel.img
 
@@ -35,6 +35,6 @@ clean :
 	rm -f $(DEPS) $(OBJECTS) build/output.elf $(TARGET)
 
 run : $(TARGET) qemu/qemu-system-arm qemu/libpng12.so.0 qemu/libcurl.so.4
-	@LD_LIBRARY_PATH=qemu qemu/qemu-system-arm -machine raspi2 -bios $(TARGET) -serial mon:stdio -s -S
+	@LD_LIBRARY_PATH=qemu qemu/qemu-system-arm -machine raspi2 -bios $(TARGET) -serial mon:stdio -s
 
 -include $(DEPS)
