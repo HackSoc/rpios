@@ -1,10 +1,10 @@
 #include "hacksoc_logo.h"
 
-#include "framebuffer.h"
-#include "main.h"
-#include "mem.h"
-#include "mailbox.h"
-#include "rng.h"
+#include "../framebuffer.h"
+#include "../main.h"
+#include "../mem.h"
+#include "../mailbox.h"
+#include "../rng.h"
 #include <stdbool.h>
 
 void hacksoc_logo_animation() {

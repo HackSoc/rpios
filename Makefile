@@ -2,7 +2,7 @@ ARMGNU ?= arm-none-eabi
 LINKER ?= build/kernel.ld
 
 AOBJS := $(patsubst %.s,build/%.o,$(wildcard *.s))
-COBJS := $(patsubst %.c,build/%.o,$(wildcard *.c))
+COBJS := $(patsubst %.c,build/%.o,$(wildcard *.c) $(wildcard demos/*.c))
 OBJECTS := $(AOBJS) $(COBJS)
 DEPS := $(COBJS:.o=.d)
 
@@ -30,6 +30,7 @@ build/%.o : %.c | build
 
 build :
 	@mkdir -p $@
+	@mkdir -p "$@/demos"
 
 clean :
 	rm -f $(DEPS) $(OBJECTS) build/output.elf $(TARGET)
