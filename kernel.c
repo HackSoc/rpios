@@ -79,3 +79,12 @@ void kmain()
     }
     halt();
 }
+
+int raise(int tni) {
+    return 0;
+    // thanks
+    // I
+    // hate
+    // it
+    // .
+}
