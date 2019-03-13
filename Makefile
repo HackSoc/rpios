@@ -7,7 +7,7 @@ OBJECTS := $(AOBJS) $(COBJS)
 DEPS := $(COBJS:.o=.d)
 
 CFLAGS += -std=c99 -mfloat-abi=hard -ffreestanding -fno-builtin -march=armv7-a -MD -MP -g
-LDFLAGS = --no-undefined  -L/usr/lib/gcc/arm-none-eabi/8.3.0/ -L/opt/york/cs/hdd/sourcery-codebench-lite-arm/lib/gcc/arm-none-linux-gnueabi/4.8.3/ -lgcc
+LDFLAGS = --no-undefined -L/usr/lib/gcc/arm-none-eabi/6.3.1/  -L/usr/lib/gcc/arm-none-eabi/8.3.0/ -L/opt/york/cs/hdd/sourcery-codebench-lite-arm/lib/gcc/arm-none-linux-gnueabi/4.8.3/ -lgcc
 
 TARGET = build/kernel.img
 
