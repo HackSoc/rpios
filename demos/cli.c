@@ -10,79 +10,17 @@
 #define MIN(a, b) ({ __typeof__(a) _min_a = (a); __typeof__(b) _min_b = (b); _min_a > _min_b ? _min_b : _min_a; })
 #define MAX(a, b) ({ __typeof__(a) _max_a = (a); __typeof__(b) _max_b = (b); _max_a > _max_b ? _max_a : _max_b; })
 
-static uint32_t x = 0;
-static uint32_t y = 0;
-
-void tty_write(uint8_t chr)
-{
-    uart_write(chr);
-    if(chr == '\b'){
-        uart_write(' ');
-        uart_write('\b');
-        x-=8;
-        draw_char(' ', x, y);
-    } else if(chr == '\n'){
-        x=0;
-        y+=16;
-    } else {
-        draw_char(chr, x, y);
-        x+=8;
-    }
-}
-
-void put(uint8_t *str) {
-    uint8_t chr;
-    while (chr = *str++) {
-        tty_write(chr);
-    }
-}
+static uint32_t x = 0; static uint32_t y = 0;
 
 void putn(uint8_t *str, size_t n) {
     for (uint8_t chr, i = 0; (chr = *str) && i < n; str++, i++) {
         tty_write(chr);
     }
 }
-
-void puts(uint8_t *str)
-{
+void put(uint8_t *str) {
     uint8_t chr;
-    while(chr = *str++)
-    {
+    while (chr = *str++) {
         tty_write(chr);
-    }
-    tty_write('\n');
-}
-
-uint8_t *gets(uint8_t *str, size_t len)
-{
-    uint8_t *current_chr = str;
-    while(1){
-        while (!uart_read_ready()) {
-            draw_char('_', x, y);
-        }
-        draw_char(' ', x, y);
-        uint8_t input_chr = uart_read();
-        switch(input_chr){
-            case '\r':
-            case '\n':
-                tty_write('\n');
-                return str;
-            case '\b':
-            case 0x7F:
-                if(current_chr > str) {
-                    tty_write('\b');
-                    current_chr--;
-                    *current_chr = '\0';
-                }
-                break;
-            default:
-                if(current_chr >= str+len-1)
-                    continue;
-                tty_write(input_chr);
-                *current_chr = input_chr;
-                current_chr++;
-                break;
-        }
     }
 }
 
