@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include "uart.h"
 #include "gpio.h"
 
@@ -28,4 +29,9 @@ uint8_t uart_read()
 {
     while(*UART_FR & (1 << 4)); // wait while rx fifo is empty
     return *UART_DR;
+}
+
+bool uart_read_ready()
+{
+    return !(*UART_FR & (1 << 4));
 }
