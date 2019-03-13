@@ -6,8 +6,8 @@ COBJS := $(patsubst %.c,build/%.o,$(wildcard *.c) $(wildcard demos/*.c))
 OBJECTS := $(AOBJS) $(COBJS)
 DEPS := $(COBJS:.o=.d)
 
-LDFLAGS = --no-undefined -L/opt/york/cs/hdd/sourcery-codebench-lite-arm/lib/gcc/arm-none-linux-gnueabi/4.8.3/ -lgcc
-CFLAGS += -std=c99 -mfloat-abi=hard -ffreestanding -fno-builtin -march=armv7-a -mfpu=vfpv3 -I. -MD -MP -g
+CFLAGS += -std=c99 -mfloat-abi=hard -ffreestanding -fno-builtin -march=armv7-a -MD -MP -g
+LDFLAGS = --no-undefined  -L/usr/lib/gcc/arm-none-eabi/8.3.0/ -L/opt/york/cs/hdd/sourcery-codebench-lite-arm/lib/gcc/arm-none-linux-gnueabi/4.8.3/ -lgcc
 
 TARGET = build/kernel.img
 
