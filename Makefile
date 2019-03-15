@@ -12,7 +12,7 @@ LDFLAGS += --no-undefined -L/usr/lib/gcc/arm-none-eabi/6.3.1/ -lgcc
 
 TARGET = build/kernel.img
 
-.PHONY: clean run all
+.PHONY: clean run all debug
 
 all : $(TARGET)
 
@@ -37,4 +37,7 @@ clean :
 run : $(TARGET) qemu/qemu-system-arm qemu/libpng12.so.0 qemu/libcurl.so.4
 	@LD_LIBRARY_PATH=qemu qemu/qemu-system-arm -machine raspi2 -bios $(TARGET) -serial mon:stdio -s -S
 
--include $(DEPS)
+debug : $(TARGET)
+	gdb-multiarch build/output.elf --ex "target remote localhost:1234" --ex "set debug-file-directory build"
+
+-include $(DEPS)-L/usr/lib/gcc/arm-none-eabi/6.3.1/
