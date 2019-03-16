@@ -1,7 +1,11 @@
+#ifndef RPIOS_MAILBOX_H
+#define RPIOS_MAILBOX_H
 #pragma once
-#include <stdint.h>
 
-#define MBOX_BASE ((volatile uint32_t * const) 0x3F00B880)
+#include <stdint.h>
+#include "../integration/platform_specific.h"
+
+#define MBOX_BASE ((volatile address_t *const)0x3F00B880)
 
 #define MBOX_R_D (MBOX_BASE + 0x0)
 #define MBOX_R_P (MBOX_BASE + 0x4)
@@ -17,3 +21,5 @@
 
 uint32_t mbox_read(uint8_t chan);
 void mbox_write(uint32_t data, uint8_t chan);
+
+#endif
