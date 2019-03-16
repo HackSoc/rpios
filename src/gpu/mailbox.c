@@ -1,5 +1,6 @@
 #include "mailbox.h"
 #include "../memory/mem.h"
+#include "../lib/string.h"
 
 uint32_t mbox_read(uint8_t chan)
 {
@@ -22,7 +23,14 @@ void mbox_write(uint32_t data, uint8_t chan)
     *MBOX_W_D = data + chan;
 }
 
-uint8_t* mbox_prop_get(uint32_t channel, uint32_t tag, uint32_t request_bytes, uint8_t* request, uint32_t response_bytes) {
+void* mbox_prop_get(MailboxProperty prop, void* request)
+{
+    return mbox_prop_get_manual(prop.channel, prop.tag, prop.request_bytes,
+        request, prop.response_bytes);
+}
+
+void* mbox_prop_get_manual(uint32_t channel, uint32_t tag, uint32_t request_bytes, void* request, uint32_t response_bytes)
+{
     // Mailbox properties allow making various calls and requests to the
     // hardware. 
     // They're quite well documented here:
@@ -74,10 +82,8 @@ uint8_t* mbox_prop_get(uint32_t channel, uint32_t tag, uint32_t request_bytes, u
     // Request code
     mbox_prop_buffer[4] = 0;
 
-    // Do a weird memcpy into the tag value buffer
-    for (uint32_t i = 0; i < request_bytes; i++) {
-        ((uint8_t*)(mbox_prop_buffer[5]))[i] = request[i];
-    }
+    // Memcpy into the tag value buffer
+    memcpy(mbox_prop_buffer + 5, request, request_bytes);
 
     // Write to the mailbox and read the result
     mbox_write((uint32_t)mbox_prop_buffer, 8);
