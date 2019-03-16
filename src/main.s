@@ -11,9 +11,9 @@
 .section .init
 .global _start
 _start:
-    .extern kmain
+    .extern kernal_main
     mov sp,#0x8000
-    bl kmain
+    bl kernal_main
 
 .global delay
 delay:
@@ -23,7 +23,7 @@ bne .loop
 bx lr
 
 .section .data
-.global font
-font:
+.global font_default
+font_default:
     .incbin "font.bin"
 

@@ -1,5 +1,6 @@
 #include "xpm.h"
-#include "framebuffer.h"
+#include "../graphics/framebuffer.h"
+#include <stdbool.h>
 
 uint64_t xpm_blit_image(uint32_t x, uint32_t y, char *xpm[])
 {
@@ -69,7 +70,7 @@ uint64_t xpm_blit_image(uint32_t x, uint32_t y, char *xpm[])
             }
             if (!colortable[k].transparent)
             {
-                framebuffer_set_pixel(j + x, i + y, colortable[k].co);
+                fb_set_pixel(j + x, i + y, colortable[k].co);
             }
         }
     }
