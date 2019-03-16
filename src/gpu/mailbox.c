@@ -1,4 +1,5 @@
 #include "mailbox.h"
+#include "../memory/mem.h"
 
 uint32_t mbox_read(uint8_t chan)
 {
@@ -52,31 +53,34 @@ uint8_t* mbox_prop_get(uint32_t channel, uint32_t tag, uint32_t request_bytes, u
     //   - The value buffer will contain the response. This can be more granular
     //     than u32 so this function casts it down to u8.
 
+    // Clear the buffer first
+    memset(mbox_prop_buffer, 0, sizeof(uint32_t) * PROP_BUFFER_SIZE);
+
     // Total buffer size
-    buffer[0] = sizeof(uint32_t) * PROP_BUFFER_SIZE;
+    mbox_prop_buffer[0] = sizeof(uint32_t) * PROP_BUFFER_SIZE;
 
     // Request code, always 0
-    buffer[1] = 0;
+    mbox_prop_buffer[1] = 0;
 
     // Tag ID 
-    buffer[2] = tag;
+    mbox_prop_buffer[2] = tag;
 
     // Value buffer size
-    buffer[3] =
+    mbox_prop_buffer[3] =
         request_bytes > response_bytes
             ? request_bytes
             : response_bytes;
 
     // Request code
-    buffer[4] = 0;
+    mbox_prop_buffer[4] = 0;
 
     // Do a weird memcpy into the tag value buffer
     for (uint32_t i = 0; i < request_bytes; i++) {
-        ((uint8_t*)(buffer[5]))[i] = request[i];
+        ((uint8_t*)(mbox_prop_buffer[5]))[i] = request[i];
     }
 
     // Write to the mailbox and read the result
-    mbox_write((uint32_t)buffer, 8);
+    mbox_write((uint32_t)mbox_prop_buffer, 8);
     uint32_t* response = (uint32_t*)mbox_read(8); 
 
     // Return a pointer to the value buffer

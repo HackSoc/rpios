@@ -20,7 +20,7 @@
 #define MBOX_W_C (MBOX_BASE + 0xF)
 
 #define PROP_BUFFER_SIZE 256
-static uint32_t buffer[PROP_BUFFER_SIZE] __attribute__((aligned(16)));
+static uint32_t mbox_prop_buffer[PROP_BUFFER_SIZE] __attribute__((aligned(16)));
 
 uint32_t mbox_read(uint8_t chan);
 void mbox_write(uint32_t data, uint8_t chan);
