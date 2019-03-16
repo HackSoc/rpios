@@ -88,7 +88,7 @@ uint8_t *gets(uint8_t *str, size_t len)
 void kernal_main()
 {
     uart_init();
-    if (!fb_init(1920, 1080))
+    if (fb_init(1920, 1080) != 0)
         error_hook();
     uint8_t line[241] = {0};
     while (1)
