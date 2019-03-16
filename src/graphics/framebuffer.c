@@ -23,12 +23,21 @@ ErrorStatus fb_init(uint32_t width, uint32_t height)
         internal_framebuffer_config.vheight = height;
         internal_framebuffer_config.depth = 32;
 
-        mbox_write(((uint32_t)&internal_framebuffer_config) + 0xC0000000, 1);
+        uint32_t physical_size[] = {width, height};
+        mbox_prop_get(MBOX_PROP_SET_PHYSICAL_SIZE, physical_size);
 
-        if (!mbox_read(1))
+        uint32_t buffer_size[] = {width, height};
+        mbox_prop_get(MBOX_PROP_SET_BUFFER_SIZE, buffer_size);
+
+        uint32_t depth = 32;
+        mbox_prop_get(MBOX_PROP_SET_DEPTH, &depth);
+
+        uint32_t fb_offset = 16;
+        uint8_t* fb_res = mbox_prop_get(MBOX_PROP_ALLOCATE_BUFFER, &fb_offset);
+        internal_frame_buffer_pointer = *((uint32_t**)fb_res);
+
+        if (internal_frame_buffer_pointer != NULL) 
         {
-            internal_frame_buffer_pointer = (volatile uint32_t *)(internal_framebuffer_config.addr - 0xC0000000);
-
             return STATUS_OK;
         }
     }
